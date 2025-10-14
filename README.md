@@ -3,7 +3,9 @@
 Board Target: LilyGo T-Display ESP32-S3<br>
 Recommended Version: 2.0.14<br>
 
-🪄 Step 1: Add ESP32 Board URL to Arduino Preferences<br>
+#
+
+🧰 Step 1: Add ESP32 Board URL to Arduino Preferences<br>
 
 Open Arduino IDE.<br>
 
@@ -15,6 +17,8 @@ https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32
 
 
 Click OK to save.<br>
+
+#
 
 📥 Step 2: Install ESP32 Board Package<br>
 
@@ -30,11 +34,15 @@ Click Install.<br>
 
 ✅ Once installed, the package provides support for all ESP32 variants including ESP32-S3.<br>
 
+#
+
 🧭 Step 3: Select LilyGo T-Display ESP32-S3 Board<br>
 
 Go to Tools → Board → esp32<br>
 
 Choose ESP32S3 Dev Module (works for LilyGo T-Display ESP32-S3 boards).<br>
+
+#
 
 ⚙️ Step 4: Configure Board Settings<br>
 Arduino IDE Setting	Value<br>
@@ -53,6 +61,8 @@ USB Mode	CDC and JTAG<br>
 ![Configure ESP32](https://github.com/user-attachments/assets/83eb59c6-9605-4194-bf4a-9cfb923294ff)
 
 📌 These settings match typical LilyGo T-Display ESP32-S3 boards and ensure USB works correctly for both flashing and Serial Monitor.<br>
+
+#
 
 🧪 Step 5: Test with Example Sketch<br>
 
@@ -76,6 +86,8 @@ Request a BOLT11 invoice for a specific amount<br>
 
 Pay that invoice using an LNbits wallet API<br>
 
+#
+
 🧠 How the Code Works (Step by Step)<br>
 
 Include Required Libraries<br>
@@ -83,7 +95,6 @@ Include Required Libraries<br>
 #include <WiFi.h><br>
 #include <HTTPClient.h><br>
 #include <ArduinoJson.h><br>
-
 
 WiFi.h: Connects ESP32 to your Wi-Fi network.<br>
 
@@ -98,13 +109,11 @@ const char* WIFI_PASSWORD = "xxxx";<br>
 const char* LNBITS_API_KEY = "xxxx";<br>
 const char* LNBITS_API_URL = "xxxx";<br>
 
-
 Fill in your Wi-Fi credentials and LNbits Admin key + API URL (e.g. https://yourlnbits.com/api/v1/payments).<br>
 
 Resolve Lightning Address → Get Invoice<br>
 
 String invoice = get_lnurl_invoice("lyricalweather78@walletofsatoshi.com", 21);<br>
-
 
 Splits the Lightning address into name and domain.<br>
 
@@ -118,16 +127,11 @@ Pay Invoice via LNbits API<br>
 
 pay_invoice(invoice);<br>
 
-
 Sends a POST request to your LNbits wallet with:<br>
 
-{<br>
-  "out": true,<br>
-  "bolt11": "BOLT11_INVOICE_HERE"<br>
-}<br>
-
-
 If successful, it returns a payment_hash and prints confirmation to Serial Monitor.<br>
+
+#
 
 Main Flow<br>
 
@@ -141,6 +145,8 @@ Pays the invoice via LNbits.<br>
 
 All status messages print to the Serial Monitor for debugging.<br>
 
+#
+
 📌 Key Notes<br>
 
 This code uses ArduinoJson v5 syntax. If you have v6 installed, you’ll need to adapt the parsing lines.<br>
@@ -150,3 +156,5 @@ amount_sats is multiplied by 1000 because LNURL expects millisatoshis.<br>
 Make sure your LNbits wallet has sufficient funds and the correct Admin key is used.<br>
 
 Works best on ESP32-S3 boards with Wi-Fi connectivity and stable power.<br>
+
+#
