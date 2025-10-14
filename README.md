@@ -4,6 +4,8 @@ Board Target: LilyGo T-Display ESP32-S3<br>
 Recommended Version: 2.0.14<br>
 
 #
+![ESP32 LNbits Transfer](https://github.com/user-attachments/assets/e3a71137-c9e0-469b-a181-99d9060eccee)
+#
 
 🧰 Step 1: Add ESP32 Board URL to Arduino Preferences<br>
 
