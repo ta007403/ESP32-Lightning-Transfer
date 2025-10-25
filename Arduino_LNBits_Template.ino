@@ -2,6 +2,9 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>   // version 5
 
+#define LN_ADDRESS_DESTINATION "lyricalweather78@walletofsatoshi.com"
+#define SAT_AMOUNT 90
+
 // === CONFIGURATION ===
 const char* WIFI_SSID     = "xxxx";
 const char* WIFI_PASSWORD = "xxxx";
@@ -105,8 +108,8 @@ void setup() {
   delay(500);
 
   // Example usage
-  String wos_ln_address = "lyricalweather78@walletofsatoshi.com";  // Lightning Address you need to be a destination
-  int amount_sats = 21; // Amount you need to transfer sat
+  String wos_ln_address = LN_ADDRESS_DESTINATION;  // Lightning Address you need to be a destination
+  int amount_sats = SAT_AMOUNT; // Amount you need to transfer sat
 
   delay(500);
 
@@ -123,3 +126,4 @@ void setup() {
 void loop() {
   // nothing here
 }
+
