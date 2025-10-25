@@ -9,21 +9,22 @@
 const char* WIFI_SSID     = "xxxx";
 const char* WIFI_PASSWORD = "xxxx";
 
-const char* LNBITS_API_KEY = "xxxx";
-const char* LNBITS_API_URL = "xxxx";
+// LNbits API info
+#define LNBITS_BASE_URL "xxxx"
+#define LNBITS_API_KEY "xxxx"
+#define LNBITS_PAYMENTS_ENDPOINT "/api/v1/payments"
 
 // === FUNCTIONS ===
 String get_lnurl_invoice(String lightning_address, int amount_sats) {
   String name = lightning_address.substring(0, lightning_address.indexOf('@'));
   String domain = lightning_address.substring(lightning_address.indexOf('@') + 1);
-
   String lnurlp_url = "https://" + domain + "/.well-known/lnurlp/" + name;
 
   HTTPClient http;
   http.begin(lnurlp_url);
   int httpCode = http.GET();
   if (httpCode != 200) {
-    Serial.println("Failed to resolve lightning address.");
+    Serial.printf("Failed to resolve lightning address. HTTP %d\n", httpCode);
     http.end();
     return "";
   }
@@ -37,13 +38,19 @@ String get_lnurl_invoice(String lightning_address, int amount_sats) {
     Serial.println("JSON parse failed (step 1).");
     return "";
   }
+
   String callback = root["callback"].as<String>();
+  if (callback == "") {
+    Serial.println("Callback URL missing.");
+    return "";
+  }
 
   // Request invoice with amount in millisats
-  http.begin(callback + "?amount=" + String(amount_sats * 1000));
+  String callback_url = callback + "?amount=" + String(amount_sats * 1000);
+  http.begin(callback_url);
   httpCode = http.GET();
   if (httpCode != 200) {
-    Serial.println("Failed to get invoice.");
+    Serial.printf("Failed to get invoice. HTTP %d\n", httpCode);
     http.end();
     return "";
   }
@@ -57,14 +64,16 @@ String get_lnurl_invoice(String lightning_address, int amount_sats) {
     Serial.println("JSON parse failed (step 2).");
     return "";
   }
-  String pr = root2["pr"].as<String>();
 
+  String pr = root2["pr"].as<String>();
   return pr;
 }
 
 void pay_invoice(String bolt11_invoice) {
   HTTPClient http;
-  http.begin(LNBITS_API_URL);
+
+  String url = String(LNBITS_BASE_URL) + String(LNBITS_PAYMENTS_ENDPOINT);
+  http.begin(url);
   http.addHeader("Content-Type", "application/json");
   http.addHeader("X-Api-Key", LNBITS_API_KEY);
 
@@ -81,10 +90,10 @@ void pay_invoice(String bolt11_invoice) {
       Serial.println("JSON parse failed (response).");
       return;
     }
-    Serial.println("Payment sent successfully!");
+    Serial.println("✅ Payment sent successfully!");
     Serial.println("Payment hash: " + String((const char*) root["payment_hash"]));
   } else {
-    Serial.println("Payment failed.");
+    Serial.println("❌ Payment failed.");
     Serial.printf("HTTP %d\n", httpCode);
     Serial.println(payload);
   }
@@ -94,7 +103,7 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
   Serial.println("STEP 1: Serial OK");
-  
+
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.println("STEP 2: WiFi begin done");
 
@@ -107,23 +116,23 @@ void setup() {
 
   delay(500);
 
-  // Example usage
-  String wos_ln_address = LN_ADDRESS_DESTINATION;  // Lightning Address you need to be a destination
-  int amount_sats = SAT_AMOUNT; // Amount you need to transfer sat
+  String wos_ln_address = LN_ADDRESS_DESTINATION;
+  int amount_sats = SAT_AMOUNT;
 
   delay(500);
 
   String invoice = get_lnurl_invoice(wos_ln_address, amount_sats);
-  
+
   if (invoice.length() > 0) {
     Serial.println("Invoice (BOLT11):");
     Serial.println(invoice);
-    
+
     pay_invoice(invoice);
+  } else {
+    Serial.println("Failed to get invoice.");
   }
 }
 
 void loop() {
   // nothing here
 }
-
